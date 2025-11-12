@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, ChangeEvent, FormEvent } from "react"
 import { motion } from "framer-motion"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,16 +9,22 @@ import emailjs from "@emailjs/browser"
 
 export function Contact() {
   const [formData, setFormData] = useState({
-    name: "", email: "", phone: "", message: "",
+    name: "", 
+    email: "", 
+    phone: "", 
+    message: "",
   })
   const [isSending, setIsSending] = useState(false)
   const [sent, setSent] = useState(false)
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ 
+      ...formData, 
+      [e.target.name]: e.target.value 
+    })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     setIsSending(true)
 
@@ -26,7 +32,11 @@ export function Contact() {
       .send(
         "YOUR_SERVICE_ID",
         "YOUR_TEMPLATE_ID",
-        { ...formData, from_name: formData.name, from_email: formData.email },
+        { 
+          ...formData, 
+          from_name: formData.name, 
+          from_email: formData.email 
+        },
         "YOUR_PUBLIC_KEY"
       )
       .then(() => {
@@ -40,6 +50,12 @@ export function Contact() {
       })
   }
 
+  const inputFields = [
+    { name: "name", type: "text", placeholder: "Full Name" },
+    { name: "email", type: "email", placeholder: "Email" },
+    { name: "phone", type: "tel", placeholder: "Phone Number" }
+  ]
+
   return (
     <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-12 overflow-hidden">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
@@ -51,7 +67,11 @@ export function Contact() {
           transition={{ duration: 0.7 }}
           className="rounded-2xl overflow-hidden shadow-lg"
         >
-          <img src="/contact.png" alt="Contact" className="w-full h-[480px] object-cover" />
+          <img 
+            src="/contact.png" 
+            alt="Contact" 
+            className="w-full h-[480px] object-cover" 
+          />
         </motion.div>
 
         {/* Right Form */}
@@ -67,13 +87,13 @@ export function Contact() {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {["name", "email", "phone"].map((field) => (
+            {inputFields.map((field) => (
               <Input
-                key={field}
-                type={field === "email" ? "email" : field === "phone" ? "tel" : "text"}
-                name={field}
-                placeholder={field === "name" ? "Full Name" : field === "email" ? "Email" : "Phone Number"}
-                value={formData[field]}
+                key={field.name}
+                type={field.type}
+                name={field.name}
+                placeholder={field.placeholder}
+                value={formData[field.name as keyof typeof formData]}
                 onChange={handleChange}
                 required
                 className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
